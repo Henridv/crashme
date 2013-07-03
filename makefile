@@ -1,16 +1,20 @@
 
 # unix makefile for crashme program.
 
-CFLAGS=-DPRNG_MT
+CFLAGS	= -DPRNG_MT -Wall -std=c99
+CC		= gcc
 
 all: crashme pddet
-
-# make "CFLAGS=-Wall -DPRNG_MT -g"xo CC=gcc
 
 crashme: crashme.o vnsq.o mt19937ar.o
 	$(CC) -o crashme crashme.o vnsq.o mt19937ar.o
 
 crashme.o: crashme.c
+
+crashme.new: crashme.new.o
+	$(CC) -o crashme.new crashme.new.o
+
+crashme.new.o: crashme.new.c
 
 pddet:	pddet.o
 	$(CC) -o pddet pddet.o
@@ -25,9 +29,10 @@ showdefs:
 	$(CC) -dM -E - < /dev/null
 
 clean:
-	-rm crashme pddet *.o core crashme.txt crashme.zip \
-            crashme.tgz crashme_i386.zip *.plg *.ncb *.opt
-	-rm -rf release debug
+	@rm -f crashme pddet *.o core crashme.txt crashme.zip \
+            crashme.tgz crashme_i386.zip *.plg *.ncb *.opt 2> /dev/null
+	@rm -f crashme.new 2> /dev/null
+	@rm -rf release debug 2> /dev/null
 
 # create for dist for people without nroff
 
@@ -39,7 +44,7 @@ DIST_FILES = crashme.man crashme.c crashme.html \
              crashme.vms-opt descrip.mms makefile \
              pddet.c crashme.txt
 
-# These files were in the distribution. 
+# These files were in the distribution.
 # but they got lost and it isn't clear
 
 # crashme.dsw crashme.dsp pddet.dsp
@@ -53,7 +58,7 @@ crashme.tgz: $(DIST_FILES)
 check:
 	nsgmls -s crashme.html
 
-dist: crashme.zip crashme.tgz 
+dist: crashme.zip crashme.tgz
 
 #crashme_i386.zip
 
