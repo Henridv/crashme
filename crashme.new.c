@@ -217,12 +217,6 @@ void summarize_status(void);
 void monitor_fcn(int sig);
 void vfork_main(long, long, char *, char *, long, char *);
 
-#ifdef WIN32
-DWORD exception_filter(DWORD);
-void chk_CloseHandle(HANDLE);
-#endif
-
-
 /* GLO     Function definitions:     */
 
 void record_note()
@@ -306,8 +300,6 @@ unsigned char *bad_malloc(long n)            /* GLO - this is function bad_mallo
 
     return (data);
 }
-
-#ifndef WIN32
 
 void again_handler(int sig)
 {
@@ -443,8 +435,6 @@ void set_up_signals(void)
 #endif
 
     my_signal(SIGINT, again_handler);
-
-#endif      /* end of #ifndef WIN32  */
 }
 
 void compute_badboy_1(n)
