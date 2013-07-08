@@ -1,29 +1,20 @@
 
 # unix makefile for crashme program.
+MAKEFLAGS	+= -rR --no-print-directory
 
-CFLAGS	= -DPRNG_MT -Wall -std=c99
-CC		= gcc
+BUILDDIR	= build
+CFLAGS		= -DPRNG_MT -Wall -std=c99
+CC			= gcc
 
-all: crashme pddet
+OBJECTS := crashme.new.o pddet.o mt19937ar.o
+OBJECTS := $(addprefix $(BUILDDIR)/, $(notdir $(OBJECTS)))
 
-crashme: crashme.o vnsq.o mt19937ar.o
-	$(CC) -o crashme crashme.o vnsq.o mt19937ar.o
+all: ${OBJECTS}
+	$(CC) -o ${BUILDDIR}/crashme.new ${BUILDDIR}/crashme.new.o
 
-crashme.o: crashme.c
-
-crashme.new: crashme.new.o
-	$(CC) -o crashme.new crashme.new.o
-
-crashme.new.o: crashme.new.c
-
-pddet:	pddet.o
-	$(CC) -o pddet pddet.o
-
-pddet.o: pddet.c
-
-vnsq.o: vnsq.c
-
-mt19937ar.o: mt19937ar.c
+${BUILDDIR}/%.o: %.c
+	@mkdir -p ${BUILDDIR}
+	${CC} ${CFLAGS} -c -o $@ $<
 
 showdefs:
 	$(CC) -dM -E - < /dev/null
@@ -32,7 +23,7 @@ clean:
 	@rm -f crashme pddet *.o core crashme.txt crashme.zip \
             crashme.tgz crashme_i386.zip *.plg *.ncb *.opt 2> /dev/null
 	@rm -f crashme.new 2> /dev/null
-	@rm -rf release debug 2> /dev/null
+	@rm -rf release debug ${BUILDDIR} 2> /dev/null
 
 # create for dist for people without nroff
 
