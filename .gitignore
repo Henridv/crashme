@@ -1,0 +1,16 @@
+# Object files
+*.o
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects
+*.so
+*.so.*
+
+# Executables
+*.out
+
+# Build folder
+build/*
