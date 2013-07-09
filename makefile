@@ -2,6 +2,7 @@
 # unix makefile for crashme program.
 MAKEFLAGS	+= -rR --no-print-directory
 
+SRCDIR		= src
 BUILDDIR	= build
 
 CFLAGS		= -DPRNG_MT -Wall -std=c99
@@ -34,7 +35,7 @@ $(BUILDDIR)/crashme.new: $(OBJECTS)
 	@echo "CC $@"
 	@$(CC) -o $(BUILDDIR)/crashme.new $(BUILDDIR)/crashme.new.o
 
-$(BUILDDIR)/%.o: %.c | $(BUILDDIR)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 	@echo "CC $@"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
