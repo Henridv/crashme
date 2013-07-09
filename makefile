@@ -4,17 +4,19 @@ MAKEFLAGS	+= -rR --no-print-directory
 
 BUILDDIR	= build
 CFLAGS		= -DPRNG_MT -Wall -std=c99
-CC			= gcc
+CC			= $(CROSS_COMPILE)gcc
 
 OBJECTS := crashme.new.o pddet.o mt19937ar.o
 OBJECTS := $(addprefix $(BUILDDIR)/, $(notdir $(OBJECTS)))
 
-all: ${OBJECTS}
-	$(CC) -o ${BUILDDIR}/crashme.new ${BUILDDIR}/crashme.new.o
+all: $(OBJECTS)
+	$(CC) -o $(BUILDDIR)/crashme.new $(BUILDDIR)/crashme.new.o
 
-${BUILDDIR}/%.o: %.c
-	@mkdir -p ${BUILDDIR}
-	${CC} ${CFLAGS} -c -o $@ $<
+$(BUILDDIR)/%.o: %.c | $(BUILDDIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(BUILDDIR):
+	@mkdir -p $(BUILDDIR)
 
 showdefs:
 	$(CC) -dM -E - < /dev/null
@@ -23,7 +25,7 @@ clean:
 	@rm -f crashme pddet *.o core crashme.txt crashme.zip \
             crashme.tgz crashme_i386.zip *.plg *.ncb *.opt 2> /dev/null
 	@rm -f crashme.new 2> /dev/null
-	@rm -rf release debug ${BUILDDIR} 2> /dev/null
+	@rm -rf release debug $(BUILDDIR) 2> /dev/null
 
 # create for dist for people without nroff
 
