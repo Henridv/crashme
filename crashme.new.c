@@ -1,5 +1,3 @@
-char *crashme_version = "2.45 13-JUN-2006";
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +19,8 @@ char *crashme_version = "2.45 13-JUN-2006";
 #define strchr index
 #endif
 
+const char *crashme_version = "3.0 01-JUL-2013";
+
 /* GLO    Global variables - CAUTION   */
 
 BADBOY badboy;
@@ -33,12 +33,11 @@ long malloc_flag = 0;
 unsigned char *the_data;
 char *note_buffer;
 char *notes;
-
 long verbose_level = 5;
 
 FILE *logfile;
 
-char *subprocess_ind = "subprocess";   /* move to global variable section */
+const char *subprocess_ind = "subprocess";
 
 void record_note()
 {
@@ -124,7 +123,7 @@ unsigned char *bad_malloc(long n)            /* GLO - this is function bad_mallo
 
 void again_handler(int sig)
 {
-    char *ss;
+    const char *ss;
     switch (sig)
     {
     case SIGILL:  ss =   " illegal instruction"; break;
@@ -191,9 +190,7 @@ act.sa_mask = target_set ;
 
 
 
-void my_signal(sig, func)
-int sig;
-void func(int) ;
+void my_signal(int sig, void (*func)(int))
 {
 #ifndef SA_ONESHOT
     signal(sig, func);
@@ -214,7 +211,7 @@ void func(int) ;
 
 #ifdef __linux__
     act.sa_restorer = 0;
-#endif /* linux */
+#endif /* __linux__ */
 
     act.sa_flags = SA_NOMASK;
 
@@ -398,9 +395,6 @@ void try_one_crash()
 
 
 int main(int argc, char **argv)
-/*
- * int argc; char **argv;
- */
 {
     long nsubs, hrs, mns, scs, tflag, j, m;
     note_buffer = (char *) malloc(512);
@@ -551,15 +545,13 @@ struct status_list
 struct status_list *slist = NULL;
 
 int record_status(long n)
-/*
- * long n;
- */
 {
     struct status_list *l;
     for (l = slist; l != NULL; l = l->next)
-
+    {
         if (n == l->status)
             return (++l->count);
+    }
 
     l = (struct status_list *) malloc(sizeof(struct status_list));
     l->count = 1;

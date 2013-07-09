@@ -3,17 +3,40 @@
 MAKEFLAGS	+= -rR --no-print-directory
 
 BUILDDIR	= build
+
 CFLAGS		= -DPRNG_MT -Wall -std=c99
+LDFLAGS		= --cref --error-unresolved-symbols
+
 CC			= $(CROSS_COMPILE)gcc
+LD			= $(CROSS_COMPILE)ld
+
+ifneq ($(origin CROSS_COMPILE), undefined)
+	CFLAGS	+=	-marm -mabi=aapcs-linux -mno-thumb-interwork -msoft-float \
+				-ggdb3 \
+				-ffreestanding -fno-common -fno-stack-protector \
+				-Wextra -Wcast-qual -Wformat=2 -Winit-self -Winline -Wlogical-op \
+				-Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpacked \
+				-Wredundant-decls -Wshadow -Wstrict-prototypes -Wundef -Wvla -Wwrite-strings \
+				-Wno-empty-body -Wno-unused-label -Wno-unused-parameter \
+				-Werror=format-extra-args \
+				-Werror=implicit-function-declaration -Werror=implicit-int \
+				-Werror=init-self -Werror=parentheses -Werror=return-type -Werror=uninitialized
+endif
 
 OBJECTS := crashme.new.o pddet.o mt19937ar.o
 OBJECTS := $(addprefix $(BUILDDIR)/, $(notdir $(OBJECTS)))
 
-all: $(OBJECTS)
-	$(CC) -o $(BUILDDIR)/crashme.new $(BUILDDIR)/crashme.new.o
+TARGETS := $(BUILDDIR)/crashme.new
+
+all: $(TARGETS)
+
+$(BUILDDIR)/crashme.new: $(OBJECTS)
+	@echo "CC $@"
+	@$(CC) -o $(BUILDDIR)/crashme.new $(BUILDDIR)/crashme.new.o
 
 $(BUILDDIR)/%.o: %.c | $(BUILDDIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "CC $@"
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 $(BUILDDIR):
 	@mkdir -p $(BUILDDIR)
